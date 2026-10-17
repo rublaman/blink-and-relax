@@ -1,12 +1,14 @@
 # Aprender SDD con SightPause: de la idea a la primera extensión
 
-Tutorial práctico en español · Entorno revisado: **8 de septiembre de 2026** · Fuentes externas consultadas: **7 de septiembre de 2026**.
+Tutorial práctico en español · Proyecto y herramientas revisados: **17 de octubre de 2026** · Fuentes externas del tutorial consultadas: **7 de septiembre de 2026**.
 
 Esta guía está escrita para alguien que nunca ha usado desarrollo guiado por especificaciones (SDD). Aprenderás a convertir una idea en requisitos, trabajar con un agente de IA, revisar sus resultados y hacer una segunda iteración sin perder las decisiones de la primera.
 
 El ejemplo es **SightPause**, una extensión Chromium que recuerda hacer descansos visuales mediante una notificación y un pequeño panel, llamado *popup*. Se propone una interfaz minimalista, bonita y accesible con HTML, CSS y JavaScript.
 
-**Estado del proyecto en esta revisión:** la CLI y los archivos de Spec Kit están en **1.0.4**, con la integración verificada; todavía no hay una extensión implementada ni una especificación de funcionalidad. Los prompts, requisitos y árboles futuros de este documento son ejemplos para construirla. Se ha actualizado la infraestructura y comprobado el flujo básico de scripts en una copia temporal; el desarrollo de SightPause sigue pendiente.
+**Estado del proyecto:** CLI Specify, integración Codex y archivos compartidos en **1.2.1**; extensión Git **1.0.1**, extensión GitHub **1.0.2** y workflow Full SDD Cycle **1.0.1** instalados. La integración devuelve `OK`. El proyecto usa skills de Codex, scripts `sh`, numeración secuencial y commits manuales. La conversión de tareas en issues utiliza directamente `$speckit-github-taskstoissues`.
+
+**Punto de partida:** todavía no hay una extensión implementada ni una especificación de funcionalidad; la constitución está pendiente de completar. Los prompts, requisitos y árboles futuros de este documento son ejemplos para construir SightPause. Los comandos de las fases se apoyan en las skills instaladas y sus indicaciones actuales, incluidos el informe temporal de constitución y la comprobación de todas las tareas durante la convergencia.
 
 ## Índice
 
@@ -35,7 +37,7 @@ El ejemplo es **SightPause**, una extensión Chromium que recuerda hacer descans
 
 | Etiqueta | Dónde se utiliza | Ejemplo |
 |---|---|---|
-| PowerShell | Terminal, desde la raíz del repositorio | `specify version` |
+| PowerShell | Terminal, desde la raíz del repositorio | `specify --version` |
 | Codex — conversación | Cuadro de mensaje del agente | «Explícame este requisito» |
 | Codex — skill | Cuadro de mensaje, seleccionando la skill si aparece | `$speckit-specify ...` |
 | Archivo | Editor de texto o petición explícita al agente | Revisar `spec.md` |
@@ -138,7 +140,7 @@ Set-Location C:\dev\sightpause
 git status --short --branch
 git log -3 --oneline
 git remote -v
-specify version
+specify --version
 specify check
 specify integration status
 specify extension list
@@ -146,23 +148,25 @@ Get-Content .specify/init-options.json
 Get-Content .specify/integration.json
 ```
 
-### Estado verificado tras la actualización
+### Estado verificado del proyecto
 
-Esta tabla refleja la comprobación del 08/09/2026, después de actualizar los archivos de Spec Kit y antes de editar esta revisión de la guía. Si ejecutas el tutorial después de cambiar el proyecto, tu salida puede ser distinta.
+Esta tabla refleja la comprobación del 17/10/2026. Si ejecutas el tutorial después de cambiar el proyecto, tu salida puede ser distinta.
 
 | Elemento | Estado observado |
 |---|---|
-| Rama y commit | `main`; `f4c7ec1 upgrade Spec Kit project files to v1.0.4`; árbol Git limpio antes de esta revisión documental |
+| Rama y estado Git | `main`; cambios locales de infraestructura y documentación pendientes de commit |
 | Remoto | `https://github.com/rublaman/sightpause.git` |
-| CLI | Specify 1.0.4, instalada mediante uv |
-| Integración e infraestructura | Codex y archivos compartidos en 1.0.4; skills habilitadas |
-| Extensión Git | Git Branching Workflow 1.0.0, habilitada, 5 comandos y 18 hooks |
+| CLI | Specify 1.2.1, instalada mediante uv |
+| Integración e infraestructura | Codex y archivos compartidos en 1.2.1; skills habilitadas |
+| Extensión Git | Git Branching Workflow 1.0.1, habilitada, 5 comandos y 18 hooks |
+| Extensión GitHub | GitHub Integration 1.0.2, habilitada; skill `$speckit-github-taskstoissues` |
+| Workflow | Full SDD Cycle 1.0.1, instalado desde catálogo |
 | Auto-commit | `auto_commit.default: false` y todos los eventos desactivados en `git-config.yml` |
 | Scripts del núcleo | Bash, selección `script: sh` |
 | Constitución | Plantilla con campos pendientes |
 | Funcionalidad activa | No existe todavía `.specify/feature.json` |
 | Producto | No existen `specs/`, código de extensión ni pruebas |
-| Herramientas auxiliares | Git Bash, Python 3.13, uv y Node 24.19.0 disponibles; npm no localizado en esta sesión |
+| Herramientas auxiliares | PowerShell 7.6.5, Python 3.13.15, uv 0.13.0, Node 26.11.1 y npm 11.20.0 disponibles; Node instalado de forma independiente |
 | Diagnóstico de integración | `OK`; 0 archivos gestionados modificados, 0 ausentes y 0 rutas inválidas |
 
 No hace falta que `specify check` encuentre todos los agentes que enumera. En este proyecto importa la integración Codex y las herramientas que utilicen sus scripts. Ese comando no prueba el funcionamiento de la futura extensión.
@@ -181,6 +185,8 @@ sightpause/
 ├── .specify/
 │   ├── extensions/
 │   │   ├── .registry            Registro de extensiones instaladas
+│   │   ├── github/              Conversión de tareas en issues de GitHub
+│   │   │   └── …
 │   │   └── git/
 │   │       ├── commands/
 │   │       │   └── …
@@ -263,118 +269,105 @@ de generar documentos. No cambies el tipo de scripts durante este tutorial.
 <a id="actualizacion"></a>
 ## 4. Entender las versiones y actualizar Spec Kit
 
-**Aprenderás:** a actualizar la herramienta y sus archivos de proyecto por separado.
+**Aprenderás:** a mantener la CLI, los archivos del proyecto, las extensiones y el workflow.
 
-**Antes:** guarda y revisa tu trabajo con Git. Esta lección es opcional para comprender SDD. **Dónde:** PowerShell. Los comandos de actualización sí modifican herramientas o archivos; los de consulta no.
+**Antes:** revisa y guarda el trabajo que quieras conservar con Git. La instalación ya está preparada para comenzar el tutorial; esta sección sirve para su mantenimiento. **Dónde:** PowerShell.
 
-### CLI, archivos del proyecto y extensión Git
+### Qué versión corresponde a cada componente
 
-La CLI es el programa que ejecutas al escribir `specify`. Los archivos del proyecto son copias que se instalaron al preparar el repositorio. Puedes actualizar la CLI y conservar esas copias anteriores: ese era el estado del 07/09/2026, con CLI 1.0.4 y archivos 1.0.1. El 08/09/2026 se actualizaron también los archivos a 1.0.4. La versión 1.0.0 de la extensión Git tiene su propia numeración y se conserva.
+La CLI es el programa que ejecutas al escribir `specify`. La integración Codex y los archivos compartidos son copias instaladas dentro del proyecto. Las extensiones y los workflows tienen su propia numeración y se actualizan por separado.
 
-Los valores de [init-options.json](../.specify/init-options.json) guardan opciones del proyecto y la versión registrada, que la actualización también modifica; para evaluar el estado actual consulta además [integration.json](../.specify/integration.json), los manifiestos de instalación y `specify integration status`. No cambies un número en un JSON para simular una actualización.
+| Componente | Versión instalada | Consulta |
+|---|---|---|
+| CLI Specify | 1.2.1 | `specify --version` |
+| Integración Codex y archivos compartidos | 1.2.1 | `specify integration status` y sus manifiestos |
+| Extensión Git | 1.0.1 | `specify extension list` |
+| Extensión GitHub | 1.0.2 | `specify extension list` |
+| Workflow Full SDD Cycle | 1.0.1 | `specify workflow list` |
 
-**Actualización ya realizada:** se ejecutó `specify integration upgrade codex --force` después de comprobar que las diferencias gestionadas eran únicamente CRLF/LF. La CLI reinstaló los archivos y actualizó los metadatos y manifiestos. Se conservaron los scripts `sh`, las skills, la numeración secuencial y el auto-commit desactivado. No necesitas repetir la actualización para comenzar el tutorial.
+[init-options.json](../.specify/init-options.json) guarda las opciones del proyecto y la versión registrada. [integration.json](../.specify/integration.json) y los manifiestos describen la integración instalada. La CLI actualiza estos registros junto con los archivos; cambiar solo un número no instala una actualización.
 
-### Consultar, actualizar y revisar
+### Consultar el estado
 
-La [guía oficial de actualización](https://github.github.com/spec-kit/upgrade.html) distingue CLI, integración y extensiones. Estos comandos se han contrastado con la ayuda de la CLI instalada:
+La [guía oficial de actualización](https://github.github.com/spec-kit/upgrade.html) distingue la CLI de los archivos del proyecto. Consulta el estado antes de decidir si necesitas actualizar:
 
 ```powershell
 Set-Location C:\dev\sightpause
-specify version
+specify --version
 specify self check
 specify integration status
 specify extension list
+specify workflow list
 git status --short --branch
 ```
 
-El 07/09/2026, `specify self check` respondió `Up to date: 1.0.4`. Esa consulta es histórica: usa la salida que obtengas ahora para saber si existe otra versión. Los comandos siguientes quedan como referencia para futuras actualizaciones; no son pasos pendientes para llegar a 1.0.4.
+`specify self check` consulta si hay una versión estable posterior. `specify check` comprueba qué herramientas encuentra en el equipo. Son consultas distintas; ninguna genera las especificaciones ni construye SightPause.
+
+### Actualizar cuando exista una versión aplicable
 
 ```powershell
-# Consulta lo que haría la actualización, sin aplicarla
+# Consulta el método y la versión de destino sin modificar la instalación
 specify self upgrade --dry-run
 
-# Ejecuta solo cuando quieras actualizar el programa
+# Actualiza el programa
 specify self upgrade
 
-# Actualiza los archivos de integración de este proyecto
+# Actualiza las skills, los scripts y las plantillas del proyecto
 specify integration upgrade codex
 
-# Actualiza la extensión Git si hay una versión aplicable
-specify extension update git
+# Comprueba las actualizaciones de todas las extensiones instaladas
+specify extension update
+
+# Actualiza el workflow instalado desde catálogo
+specify workflow update speckit
 ```
 
-El último comando puede informar que no hay una actualización aplicable. No significa que la extensión esté ausente. No vuelvas a ejecutar `specify init --here --force` como procedimiento habitual de actualización de este repositorio.
+Las extensiones pueden pedir confirmación en la terminal. Si no existe una actualización aplicable, conservan su versión. La extensión `github` ya está instalada y la guía utiliza directamente su skill `$speckit-github-taskstoissues`.
 
-### Caso histórico resuelto: 22 archivos modificados por los saltos de línea
-
-Antes de actualizar, se observó `core.autocrlf=true`, archivos LF en el índice y CRLF en el directorio de trabajo. Git consideraba limpio el contenido; los hashes de Spec Kit detectaban diferencias de bytes. Después de actualizar, `specify integration status` devuelve `OK`, sin esas diferencias. Se conserva este caso para diagnosticar si vuelven a aparecer.
-
-Se compararon los 10 archivos gestionados de Codex y los 12 de infraestructura compartida: todos coincidían con el hash registrado al convertir CRLF a LF en memoria. No había diferencias adicionales. Puedes repetir esta comprobación de lectura; no escribe archivos:
+En Windows, si la autoactualización falla porque el ejecutable está en uso, espera a que termine y ejecuta el instalador directamente. Para reinstalar la versión usada por esta guía:
 
 ```powershell
-@'
-import hashlib
-import json
-from pathlib import Path
-
-for name in ("codex", "speckit"):
-    manifest = json.loads(
-        Path(f".specify/integrations/{name}.manifest.json").read_text(encoding="utf-8")
-    )
-    counts = {"identicos": 0, "solo_crlf": 0, "otros_o_ausentes": 0}
-    for filename, expected in manifest["files"].items():
-        path = Path(filename)
-        if not path.is_file():
-            counts["otros_o_ausentes"] += 1
-            print("AUSENTE:", filename)
-            continue
-        data = path.read_bytes()
-        if hashlib.sha256(data).hexdigest() == expected:
-            counts["identicos"] += 1
-        elif hashlib.sha256(data.replace(b"\r\n", b"\n")).hexdigest() == expected:
-            counts["solo_crlf"] += 1
-        else:
-            counts["otros_o_ausentes"] += 1
-            print("REVISAR:", filename)
-    print(name, counts)
-'@ | python -
+uv tool install specify-cli --force --from git+https://github.com/github/spec-kit.git@v1.2.1
 ```
 
-**Resultado observado inicial:** Codex: 10 `solo_crlf`; infraestructura: 12 `solo_crlf`; ambos con 0 `otros_o_ausentes`. Esta comprobación no audita los archivos de la extensión Git.
+Este comando actualiza la herramienta gestionada por uv; después se mantienen los archivos del proyecto con `specify integration upgrade codex`. Para futuras versiones, utiliza la etiqueta que hayas comprobado. La actualización ordinaria se realiza con estos comandos de mantenimiento, sin volver a inicializar el repositorio.
 
-**Resultado tras actualizar a 1.0.4:** Codex: 10 `identicos`; infraestructura: 12 `identicos`; ambos con 0 `solo_crlf` y 0 `otros_o_ausentes`.
+### Revisar diferencias antes de forzar una actualización
 
-Si la actualización de integración se bloquea, los archivos siguen teniendo únicamente esas diferencias y tienes guardado el trabajo que quieras conservar, puedes ejecutar:
+Si `specify integration status` indica archivos modificados, compara su contenido y sus finales de línea:
+
+```powershell
+git diff -- .agents/skills .specify/scripts .specify/templates
+git ls-files --eol .agents/skills .specify/scripts .specify/templates
+```
+
+Git puede normalizar CRLF/LF y mostrar el mismo contenido mientras el manifiesto detecta bytes diferentes. Comprueba la causa de cada diferencia y conserva las personalizaciones que necesites. Si has revisado los archivos y decides reemplazar las copias gestionadas, la CLI ofrece:
 
 ```powershell
 specify integration upgrade codex --force
 ```
 
-`--force` permite reemplazar archivos gestionados modificados. Si aparecen otras diferencias, revisa su contenido antes de decidir qué reemplazar. El diagnóstico previo a esta actualización no sirve para justificar sobrescribir personalizaciones futuras.
+`--force` permite sobrescribir los archivos gestionados modificados. La decisión se toma sobre el diff actual del proyecto.
 
-### Comprobar el resultado de cualquier actualización
+### Comprobar el resultado
 
 ```powershell
-specify version
+specify --version
 specify self check
 specify integration status
 specify extension list
+specify workflow list
 specify check
+git diff --check
 git diff --stat
-git diff
 git status --short
-Get-Content .specify/extensions.yml
-Get-Content .specify/extensions/git/git-config.yml
 ```
 
-**Revisa:** integración Codex, scripts `sh`, extensión Git habilitada y política de auto-commit conservada. Si Git transforma otra vez los saltos de línea, el aviso puede reaparecer; comprueba su causa. Si una skill no aparece tras actualizarla, vuelve a abrir la sesión para recargar las instrucciones.
+**Revisa:** integración `OK`, versiones esperadas, skills disponibles, extensiones Git y GitHub habilitadas, scripts `sh`, numeración secuencial y auto-commit desactivado. Si una skill no aparece tras instalarla, vuelve a abrir la sesión para recargar las instrucciones.
 
-**Validación realizada el 08/09/2026:** integración `OK` y comprobaciones de sintaxis Bash superadas. En una copia temporal se verificaron la creación de una funcionalidad, la generación del plan, la preparación de tareas, la resolución de la plantilla de checklist y los prerrequisitos de análisis/convergencia. Los resultados JSON se pudieron leer y la ausencia de `spec.md` se rechazó como corresponde. Estas comprobaciones validan el flujo básico de scripts; no equivalen a ejecutar todas las fases con un agente ni a probar la futura extensión.
+**Comportamiento de las fases:** `analyze` y `converge` requieren `spec.md`, `plan.md` y `tasks.md`; `setup-plan.sh` rechaza argumentos desconocidos. El paso de constitución explica cuándo retirar el informe temporal, y convergencia verifica también las tareas marcadas como completadas.
 
-**Cambios de comportamiento relevantes en 1.0.4:** `analyze` y `converge` comprueban explícitamente la existencia de `spec.md` mediante `--require-spec`; necesitan `spec.md`, `plan.md` y `tasks.md`. Además, `setup-plan.sh` rechaza argumentos desconocidos que antes ignoraba. Las skills instaladas usan los argumentos compatibles y los prompts de este tutorial siguen siendo válidos. La extensión Git 1.0.0 declara `speckit_version: ">=0.2.0"`, requisito que 1.0.4 cumple.
-
-**Continúa o retoma:** con el diff revisado y el estado entendido. Registra qué versiones utilizas. No describas la extensión como probada por haber pasado `specify check`.
+**Continúa o retoma:** con el diff revisado y las versiones comprobadas. Estos diagnósticos verifican la infraestructura; las pruebas de SightPause se ejecutarán cuando exista su implementación.
 
 <a id="llm"></a>
 ## 5. Trabajar con un LLM: conversación, Plan, agente y objetivos
@@ -586,6 +579,8 @@ No implementes todavía la extensión.
 
 **Revisa:** que puedas explicar cada principio y comprobarlo. Un ejemplo de plantilla que habla de microservicios no es una obligación de SightPause. Una constitución que impone herramientas innecesarias debe corregirse antes de continuar.
 
+**Antes del commit:** la skill añade al principio de la constitución un comentario HTML llamado **Sync Impact Report**, con el cambio de versión, los principios afectados y los posibles pendientes. Ese informe es material temporal para revisar la modificación. Léelo, resuelve o registra los pendientes y elimina ese comentario antes de hacer commit de la constitución. Conserva los principios, la versión y las fechas del documento.
+
 **Continúa o retoma:** lee el archivo y pide cambios concretos si hace falta. No hace falta ejecutar de nuevo `constitution` por cada botón que añadas. Referencia local: [skill de constitución](../.agents/skills/speckit-constitution/SKILL.md).
 
 ### Paso 2. Specify: describir qué debe ocurrir
@@ -765,19 +760,22 @@ cargar la extensión para revisar su funcionamiento y aspecto.
 
 **Continúa o retoma:** ejecuta la [validación del navegador](#pruebas). Si se interrumpe, utiliza el prompt de recuperación y continúa sobre las tareas existentes. Referencia: [skill de implementación](../.agents/skills/speckit-implement/SKILL.md).
 
-### Paso 9. Converge: localizar trabajo todavía sin completar
+### Paso 9. Converge: comprobar lo construido y detectar desviaciones
 
 **Aprenderás:** a comprobar cobertura de lo construido. **Antes:** disponer de `spec.md`, `plan.md` y `tasks.md`, y haber ejecutado implementación sobre esas tareas. **Dónde:** Codex, skill.
 
 ```text
 $speckit-converge
-Compara el código actual de SightPause con la spec, el plan y las tareas de
-la funcionalidad activa. Identifica requisitos o escenarios aún incompletos.
+Compara el código actual de SightPause con la spec, el plan, la constitución
+y todas las tareas de la funcionalidad activa, incluidas las marcadas [x]
+y las de ciclos anteriores de convergencia. Comprueba el comportamiento
+resultante de las correcciones. Identifica requisitos o escenarios aún
+incompletos y comportamientos que contradigan o excedan lo acordado.
 Añade trabajo pendiente trazable sin ampliar el alcance ni tratar pruebas
 manuales no ejecutadas como pruebas superadas.
 ```
 
-**Resultado esperado:** evaluación de cobertura y, si procede, nuevas tareas al final de `tasks.md`. La [skill de convergencia](../.agents/skills/speckit-converge/SKILL.md) contrasta el estado actual con los artefactos; no es un comparador de ramas ni sustituye las pruebas.
+**Resultado esperado:** evaluación de cobertura y desviaciones y, si procede, nuevas tareas al final de `tasks.md`. La [skill de convergencia](../.agents/skills/speckit-converge/SKILL.md) incluye todas las tareas, independientemente de su casilla o fase de convergencia. Una marca `[x]` declara que el trabajo se completó; esa declaración también debe contrastarse con el comportamiento actual y su evidencia. Cuando una corrección sustituye una solución anterior, se evalúa el resultado vigente. La revisión no es un comparador de ramas ni sustituye las pruebas.
 
 **Revisa:** las tareas añadidas deben corresponder a requisitos existentes. Una nueva idea de producto va al siguiente ciclo. **Continúa o retoma:** si hay trabajo, ejecuta `implement` y verifica de nuevo; si no, comprueba las pruebas reales y prepara el commit. No repitas ciclos sin leer qué falta ni qué evidencia ha cambiado.
 
@@ -971,6 +969,27 @@ Para el código, selecciona las rutas reales que has revisado. `git diff` no mue
 
 Los commits locales guardan historial; `push` lo envía al remoto. Puedes aprender todo el primer ciclo localmente. Si quieres revisión en GitHub, publica la rama y abre una pull request con problema, cambio y pruebas. Antes del siguiente ciclo, incorpora el trabajo revisado a la rama base mediante tu flujo Git, cambia a esa base y verifica que contiene la extensión. No basta con volver a una `main` que todavía no incluye la primera funcionalidad.
 
+### Opcional: convertir las tareas en issues de GitHub
+
+Utiliza la [skill `$speckit-github-taskstoissues`](../.agents/skills/speckit-github-taskstoissues/SKILL.md), proporcionada por la extensión `github` ya instalada. La extensión `git` gestiona ramas y commits; la extensión `github` convierte las tareas en issues.
+
+**Antes:** disponer de `plan.md` y `tasks.md` revisados, un remoto `origin` que apunte al repositorio de GitHub previsto y el servidor MCP de GitHub conectado al agente, con herramientas para consultar y crear issues. Comprueba también la sesión de `gh` desde PowerShell; su autenticación corresponde a la CLI y el acceso del servidor MCP se comprueba por separado:
+
+```powershell
+gh auth status
+git remote get-url origin
+```
+
+Cuando quieras crear los issues, invoca la skill en Codex:
+
+```text
+$speckit-github-taskstoissues
+Convierte las tareas de la funcionalidad activa en issues del repositorio
+de GitHub indicado por origin, conservando su trazabilidad y dependencias.
+```
+
+**Resultado esperado:** issues creados en ese repositorio para las tareas que todavía no tengan uno. La skill consulta los issues abiertos y cerrados para reconocer los identificadores de tarea existentes. **Revisa:** destino, contenido y dependencias de los issues generados. La instalación de la extensión prepara la herramienta; la creación de issues se realiza al ejecutar este paso con una funcionalidad y sus tareas.
+
 ### La rama Git y la funcionalidad activa son estados distintos
 
 Spec Kit utiliza `.specify/feature.json`, que aquí está ignorado por Git, y permite una selección explícita mediante `SPECIFY_FEATURE_DIRECTORY`. Cambiar de rama con Git no cambia automáticamente ese puntero. Así lo documenta la [guía oficial](https://github.github.com/spec-kit/quickstart.html).
@@ -1055,8 +1074,8 @@ el proyecto ni instales herramientas a partir de un comentario de comunidad.
 | `bash` falla o intenta abrir WSL | Ruta del ejecutable | Usa Git Bash mediante su ruta explícita. |
 | Errores `\r` o `bad interpreter` | Finales de línea de los scripts | Pide normalización LF solo de los scripts afectados y revisa el diff; trata la corrección del entorno como cambio separado. |
 | Spec Kit ve modificaciones y Git no | Hashes del manifiesto frente a CRLF/LF | Repite el diagnóstico de la sección 4 antes de considerar `--force`. |
-| `analyze` o `converge` indica que falta `spec.md` | Directorio de funcionalidad activa y sus tres documentos | Recupera la spec correcta o completa la fase pendiente; 1.0.4 comprueba su existencia explícitamente. |
-| `setup-plan.sh` devuelve `Unknown option` | Argumentos del comando | Usa `--json` según la skill; 1.0.4 rechaza argumentos desconocidos. La descripción y las instrucciones van en el prompt de la skill. |
+| `analyze` o `converge` indica que falta `spec.md` | Directorio de funcionalidad activa y sus tres documentos | Recupera la spec correcta o completa la fase pendiente. |
+| `setup-plan.sh` devuelve `Unknown option` | Argumentos del comando | Usa `--json` según la skill. La descripción y las instrucciones van en el prompt de la skill. |
 | `implement` pregunta por checklists | Casillas pendientes y su significado | Revisa los requisitos y documenta evidencia; no marques que el código funciona por cerrar una checklist. |
 | No hay commits tras una fase | Configuración de auto-commit y hooks | En esta guía son manuales; revisa y guarda el avance. |
 | No hay npm | ¿El plan realmente necesita paquetes? | El ejemplo usa APIs nativas y `node:test`; npm no es requisito de ejecución. |
@@ -1118,4 +1137,4 @@ Marca estos puntos cuando puedas demostrarlos. Esta es una lista del tutorial, n
 
 **Experiencias:** los autores y enlaces de la sección 11 son observaciones personales con aplicación propuesta al tutorial. Los prompts de SightPause, la política de iteración y las decisiones iniciales de producto son ejemplos propios de esta guía. Los requisitos definitivos se guardarán en la constitución y los artefactos de cada funcionalidad cuando recorras el proceso.
 
-Esta revisión actualiza el estado local y las indicaciones afectadas por Spec Kit 1.0.4; conserva la fecha de consulta de las fuentes externas. La actualización y las comprobaciones de infraestructura ejecutadas se detallan en la sección 4. Los demás bloques y ejercicios son instrucciones para el lector; su presencia aquí no acredita que se hayan ejecutado ni que SightPause esté construido.
+Esta guía describe la configuración actual de SightPause con Spec Kit 1.2.1 y las extensiones Git y GitHub instaladas. Se conserva la fecha de consulta de las fuentes externas del tutorial. Las versiones y herramientas verificadas figuran en la sección 3 y el mantenimiento de la instalación en la sección 4. Los bloques y ejercicios de desarrollo son instrucciones para el lector; su presencia aquí no acredita que se hayan ejecutado ni que SightPause esté construido.
