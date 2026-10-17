@@ -13,5 +13,6 @@ Thumbs.db
 
 # Machine-local Spec Kit caches and installation lock.
 .specify/extensions/.cache/
+.specify/integrations/.cache/
 .specify/workflows/.cache/
 .specify/.workflow-install.lock

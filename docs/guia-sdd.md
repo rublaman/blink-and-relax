@@ -154,7 +154,7 @@ Esta tabla refleja la comprobación del 17/10/2026. Si ejecutas el tutorial desp
 
 | Elemento | Estado observado |
 |---|---|
-| Rama y estado Git | `main`; cambios locales de infraestructura y documentación pendientes de commit |
+| Rama y estado Git | `main`; consulta `git status --short --branch` para ver cambios pendientes y commits por sincronizar |
 | Remoto | `https://github.com/rublaman/sightpause.git` |
 | CLI | Specify 1.2.1, instalada mediante uv |
 | Integración e infraestructura | Codex y archivos compartidos en 1.2.1; skills habilitadas |
@@ -222,6 +222,7 @@ sightpause/
 │   └── integration.json         Integración y configuración registrada
 ├── docs/
 │   └── guia-sdd.md               Este tutorial
+├── .gitattributes               Finales de línea LF para archivos de Spec Kit
 └── .gitignore
 ```
 
@@ -276,6 +277,8 @@ de generar documentos. No cambies el tipo de scripts durante este tutorial.
 ### Qué versión corresponde a cada componente
 
 La CLI es el programa que ejecutas al escribir `specify`. La integración Codex y los archivos compartidos son copias instaladas dentro del proyecto. Las extensiones y los workflows tienen su propia numeración y se actualizan por separado.
+
+La instalación aislada mediante `uv tool install` deja `specify.exe` en `C:\Users\ruben\.local\bin`; esa carpeta debe estar en el `PATH` de usuario. Comprueba la ruta efectiva con `Get-Command specify` si otra instalación parece estar ejecutándose.
 
 | Componente | Versión instalada | Consulta |
 |---|---|---|
@@ -348,6 +351,8 @@ specify integration upgrade codex --force
 ```
 
 `--force` permite sobrescribir los archivos gestionados modificados. La decisión se toma sobre el diff actual del proyecto.
+
+El repositorio fija LF mediante `.gitattributes` para las skills, scripts, plantillas, extensiones y workflows de Spec Kit, de modo que Git conserve sus finales de línea al recuperarlos. Las cachés de catálogos de extensiones, integraciones y workflows quedan excluidas del control de versiones mediante `.gitignore`.
 
 ### Comprobar el resultado
 
@@ -1071,6 +1076,7 @@ el proyecto ni instales herramientas a partir de un comentario de comunidad.
 | `$speckit-plan` no encuentra spec | Puntero activo y existencia de `spec.md` | Ejecuta `specify` primero o selecciona una spec existente. |
 | Hay dos funcionalidades parecidas | Se repitió la creación en vez de actualizar | Identifica cuál contiene el trabajo y alinea su puntero; no borres directorios sin revisar. |
 | Cambiaste de rama pero usa otra spec | `.specify/feature.json` y variable de entorno | Selecciona explícitamente la funcionalidad correcta. |
+| Sincronizar devuelve `unmerged files` | `git status` y archivos en conflicto | Resuelve la fusión pendiente, prepara los archivos resueltos con `git add` y completa su commit antes de volver a sincronizar. |
 | `bash` falla o intenta abrir WSL | Ruta del ejecutable | Usa Git Bash mediante su ruta explícita. |
 | Errores `\r` o `bad interpreter` | Finales de línea de los scripts | Pide normalización LF solo de los scripts afectados y revisa el diff; trata la corrección del entorno como cambio separado. |
 | Spec Kit ve modificaciones y Git no | Hashes del manifiesto frente a CRLF/LF | Repite el diagnóstico de la sección 4 antes de considerar `--force`. |
@@ -1125,6 +1131,7 @@ Marca estos puntos cuando puedas demostrarlos. Esta es una lista del tutorial, n
 
 - [Inicio de Spec Kit](https://github.github.com/spec-kit/quickstart.html): fases, invocaciones y funcionalidad activa.
 - [Actualización de Spec Kit](https://github.github.com/spec-kit/upgrade.html): actualización de CLI, integración y extensiones.
+- [Notas de Spec Kit 1.2.1](https://github.com/github/spec-kit/releases/tag/v1.2.1): cambios de la versión utilizada por el proyecto.
 - [Extensiones de Spec Kit](https://github.github.com/spec-kit/reference/extensions.html): registro y configuración.
 - [Prompting en Codex](https://learn.chatgpt.com/docs/prompting): contexto, verificación y planificación.
 - [Objetivos de Codex](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex): objetivos persistentes y controles.

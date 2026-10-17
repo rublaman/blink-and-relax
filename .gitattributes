@@ -1,0 +1,9 @@
+# Keep Spec Kit's managed file hashes stable and shell scripts runnable.
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.agents/skills/** text eol=lf
+.specify/scripts/** text eol=lf
+.specify/templates/** text eol=lf
+.specify/extensions/** text eol=lf
+.specify/workflows/** text eol=lf
+.specify/.gitignore text eol=lf
