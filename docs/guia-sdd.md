@@ -1,14 +1,16 @@
-# Aprender SDD con SightPause: de la idea a la primera extensión
+# Aprender SDD con BlinkAndRelax: de la idea a la primera extensión
 
 Tutorial práctico en español · Proyecto y herramientas revisados: **17 de octubre de 2026** · Fuentes externas del tutorial consultadas: **7 de septiembre de 2026**.
 
 Esta guía está escrita para alguien que nunca ha usado desarrollo guiado por especificaciones (SDD). Aprenderás a convertir una idea en requisitos, trabajar con un agente de IA, revisar sus resultados y hacer una segunda iteración sin perder las decisiones de la primera.
 
-El ejemplo es **SightPause**, una extensión Chromium que recuerda hacer descansos visuales mediante una notificación y un pequeño panel, llamado *popup*. Se propone una interfaz minimalista, bonita y accesible con HTML, CSS y JavaScript.
+El ejemplo es **BlinkAndRelax**, una extensión Chromium que recuerda hacer descansos visuales mediante una notificación y un pequeño panel, llamado *popup*. Se propone una interfaz minimalista, bonita y accesible con HTML, CSS y JavaScript.
 
 **Estado del proyecto:** CLI Specify, integración Codex y archivos compartidos en **1.2.1**; extensión Git **1.0.1**, extensión GitHub **1.0.2** y workflow Full SDD Cycle **1.0.1** instalados. La integración devuelve `OK`. El proyecto usa skills de Codex, scripts `sh`, numeración secuencial y commits manuales. La conversión de tareas en issues utiliza directamente `$speckit-github-taskstoissues`.
 
-**Punto de partida:** todavía no hay una extensión implementada ni una especificación de funcionalidad; la constitución está pendiente de completar. Los prompts, requisitos y árboles futuros de este documento son ejemplos para construir SightPause. Los comandos de las fases se apoyan en las skills instaladas y sus indicaciones actuales, incluidos el informe temporal de constitución y la comprobación de todas las tareas durante la convergencia.
+**Punto de partida:** todavía no hay una extensión implementada ni una especificación de funcionalidad; la constitución está pendiente de completar. Los prompts, requisitos y árboles futuros de este documento son ejemplos para construir BlinkAndRelax. Los comandos de las fases se apoyan en las skills instaladas y sus indicaciones actuales, incluidos el informe temporal de constitución y la comprobación de todas las tareas durante la convergencia.
+
+**Nombre actualizado el 18 de octubre de 2026:** BlinkAndRelax sustituye a SightPause. El repositorio de GitHub se llama `blinkandrelax`; la carpeta local conserva `C:\dev\sightpause`, por lo que las rutas de esta guía siguen usando ese directorio.
 
 ## Índice
 
@@ -48,7 +50,7 @@ Los bloques `text` destinados a Codex **no se pegan en PowerShell**. En PowerShe
 **Primera acción — Codex, conversación:**
 
 ```text
-Estoy aprendiendo SDD con docs/guia-sdd.md en SightPause.
+Estoy aprendiendo SDD con docs/guia-sdd.md en BlinkAndRelax.
 Explícame con un ejemplo la diferencia entre un requisito, un plan técnico
 y una tarea. No modifiques archivos. Después pídeme que clasifique tres frases.
 ```
@@ -78,7 +80,7 @@ Y un criterio de aceptación:
 
 Puedes pedir al LLM que te ayude a redactarlo. La persona sigue decidiendo si ese es el comportamiento que necesita. Un documento largo o una respuesta convincente no prueban que la extensión funcione.
 
-El recorrido de Spec Kit se apoya en documentos que se pasan de una fase a la siguiente. Su [guía oficial de inicio](https://github.github.com/spec-kit/quickstart.html) describe el proceso y sus comandos. Los ejemplos de este tutorial adaptan ese recorrido a SightPause y a las skills instaladas en este repositorio.
+El recorrido de Spec Kit se apoya en documentos que se pasan de una fase a la siguiente. Su [guía oficial de inicio](https://github.github.com/spec-kit/quickstart.html) describe el proceso y sus comandos. Los ejemplos de este tutorial adaptan ese recorrido a BlinkAndRelax y a las skills instaladas en este repositorio.
 
 ### Glosario de trabajo
 
@@ -115,13 +117,13 @@ El recorrido de Spec Kit se apoya en documentos que se pasan de una fase a la si
 | CLI Specify | Programa de terminal `specify` para instalar y gestionar esa infraestructura. |
 | Integración Codex | Archivos que enseñan a Codex cómo ejecutar las fases de Spec Kit. |
 | Extensión Git de Spec Kit | Añade operaciones Git al proceso; no es una extensión del navegador. |
-| Extensión SightPause | El producto Chromium que construirás siguiendo el tutorial. |
+| Extensión BlinkAndRelax | El producto Chromium que construirás siguiendo el tutorial. |
 
 **Ejercicio — Codex, conversación:**
 
 ```text
 Comprueba si he entendido SDD. Propón tres comportamientos ambiguos de
-SightPause y ayúdame a convertir uno en una historia y dos criterios de
+BlinkAndRelax y ayúdame a convertir uno en una historia y dos criterios de
 aceptación. Mantén las decisiones de implementación fuera de los requisitos.
 No generes todavía archivos.
 ```
@@ -150,12 +152,12 @@ Get-Content .specify/integration.json
 
 ### Estado verificado del proyecto
 
-Esta tabla refleja la comprobación del 17/10/2026. Si ejecutas el tutorial después de cambiar el proyecto, tu salida puede ser distinta.
+Esta tabla refleja la comprobación del 17/10/2026, con la URL del repositorio actualizada tras el cambio de nombre del 18/10/2026. Si ejecutas el tutorial después de cambiar el proyecto, tu salida puede ser distinta.
 
 | Elemento | Estado observado |
 |---|---|
 | Rama y estado Git | `main`; consulta `git status --short --branch` para ver cambios pendientes y commits por sincronizar |
-| Remoto | `https://github.com/rublaman/sightpause.git` |
+| Remoto | `https://github.com/rublaman/blinkandrelax.git` |
 | CLI | Specify 1.2.1, instalada mediante uv |
 | Integración e infraestructura | Codex y archivos compartidos en 1.2.1; skills habilitadas |
 | Extensión Git | Git Branching Workflow 1.0.1, habilitada, 5 comandos y 18 hooks |
@@ -228,7 +230,7 @@ sightpause/
 
 En un árbol abreviado, `.agents/skills/` significa una carpeta `skills` dentro de `.agents`; no es una carpeta con ese nombre completo. Lo mismo ocurre con `scripts/bash/` o `memory/constitution.md`. Algunos exploradores agrupan esos niveles en una sola línea. Además, `.git` puede no verse si el explorador oculta carpetas ocultas. Para consultar el árbol local desde PowerShell puedes ejecutar `Get-ChildItem -Force` y `tree /F /A .specify`.
 
-**Qué pertenece a cada parte:** `.agents/` y la mayor parte de `.specify/` son infraestructura de Spec Kit. Dentro de ella, `.specify/memory/constitution.md` es el documento de principios que sí completarás para SightPause; los moldes de `.specify/templates/` no se rellenan como si fueran las especificaciones del producto. `docs/` contiene documentación propia y `.git/` guarda el historial del repositorio. La extensión Git distribuye scripts para Bash, PowerShell y Python, aunque el núcleo de este proyecto esté configurado con `script: sh`; ver esas tres carpetas no indica una configuración incorrecta.
+**Qué pertenece a cada parte:** `.agents/` y la mayor parte de `.specify/` son infraestructura de Spec Kit. Dentro de ella, `.specify/memory/constitution.md` es el documento de principios que sí completarás para BlinkAndRelax; los moldes de `.specify/templates/` no se rellenan como si fueran las especificaciones del producto. `docs/` contiene documentación propia y `.git/` guarda el historial del repositorio. La extensión Git distribuye scripts para Bash, PowerShell y Python, aunque el núcleo de este proyecto esté configurado con `script: sh`; ver esas tres carpetas no indica una configuración incorrecta.
 
 **Lo que se creará después:** actualmente no existen `specs/` ni `.specify/feature.json`. Al ejecutar `$speckit-specify` para la primera funcionalidad, se creará una estructura como esta; `001-nombre-funcionalidad` es un nombre ilustrativo:
 
@@ -304,7 +306,7 @@ specify workflow list
 git status --short --branch
 ```
 
-`specify self check` consulta si hay una versión estable posterior. `specify check` comprueba qué herramientas encuentra en el equipo. Son consultas distintas; ninguna genera las especificaciones ni construye SightPause.
+`specify self check` consulta si hay una versión estable posterior. `specify check` comprueba qué herramientas encuentra en el equipo. Son consultas distintas; ninguna genera las especificaciones ni construye BlinkAndRelax.
 
 ### Actualizar cuando exista una versión aplicable
 
@@ -372,14 +374,14 @@ git status --short
 
 **Comportamiento de las fases:** `analyze` y `converge` requieren `spec.md`, `plan.md` y `tasks.md`; `setup-plan.sh` rechaza argumentos desconocidos. El paso de constitución explica cuándo retirar el informe temporal, y convergencia verifica también las tareas marcadas como completadas.
 
-**Continúa o retoma:** con el diff revisado y las versiones comprobadas. Estos diagnósticos verifican la infraestructura; las pruebas de SightPause se ejecutarán cuando exista su implementación.
+**Continúa o retoma:** con el diff revisado y las versiones comprobadas. Estos diagnósticos verifican la infraestructura; las pruebas de BlinkAndRelax se ejecutarán cuando exista su implementación.
 
 <a id="llm"></a>
 ## 5. Trabajar con un LLM: conversación, Plan, agente y objetivos
 
 **Aprenderás:** qué pedir a la IA, cuánta autonomía darle y cómo comprobar su trabajo.
 
-**Antes:** conoce el glosario y abre el proyecto correcto. **Dónde:** conversación de Codex. No necesitas una API propia ni una clave de OpenAI dentro de SightPause; la IA se utiliza para desarrollar el producto.
+**Antes:** conoce el glosario y abre el proyecto correcto. **Dónde:** conversación de Codex. No necesitas una API propia ni una clave de OpenAI dentro de BlinkAndRelax; la IA se utiliza para desarrollar el producto.
 
 ### Modelo, agente y modo son decisiones diferentes
 
@@ -421,7 +423,7 @@ No copies los corchetes como si fueran datos reales. Sustitúyelos o utiliza los
 **Ejemplo — Codex en modo Plan:**
 
 ```text
-Quiero definir el primer MVP de SightPause, una extensión Chromium para
+Quiero definir el primer MVP de BlinkAndRelax, una extensión Chromium para
 recordar descansos visuales mediante notificaciones y un popup minimalista.
 Lee docs/guia-sdd.md y la estructura actual. Ayúdame a decidir qué ocurre al
 pausar, reiniciar el navegador o no poder mostrar notificaciones.
@@ -438,7 +440,7 @@ Un objetivo permite mantener un resultado pendiente entre iteraciones del agente
 Después de definir la spec y las tareas, y fuera del modo Plan, un ejemplo sería:
 
 ```text
-/goal Completar la funcionalidad activa de recordatorios de SightPause según
+/goal Completar la funcionalidad activa de recordatorios de BlinkAndRelax según
 su spec.md, plan.md y tasks.md. Verifica las pruebas automatizadas y registra
 en quickstart.md cuáles de los escenarios manuales se han comprobado realmente.
 Conserva el alcance local, la interfaz mínima y los permisos acordados.
@@ -506,7 +508,7 @@ Traduce «bonito» en criterios revisables: no hay texto recortado, el estado pr
 
 | Necesidad | Base propuesta | Qué se instala o configura |
 |---|---|---|
-| Ejecutar SightPause | Navegador Chromium con Manifest V3 | Extensión local; sin Node dentro del navegador |
+| Ejecutar BlinkAndRelax | Navegador Chromium con Manifest V3 | Extensión local; sin Node dentro del navegador |
 | Interfaz | HTML, CSS y JavaScript con módulos | Sin framework, CDN ni compilación |
 | Eventos en segundo plano | Service worker de la extensión | Declaración en `manifest.json` |
 | Próximo aviso | `chrome.alarms` | Permiso `alarms` |
@@ -526,7 +528,7 @@ La [API de almacenamiento](https://developer.chrome.com/docs/extensions/referenc
 
 ```text
 Revisa conmigo la tabla de propuesta funcional de docs/guia-sdd.md.
-Identifica qué decisiones afectan al uso diario de SightPause y explica
+Identifica qué decisiones afectan al uso diario de BlinkAndRelax y explica
 sus consecuencias. Confirma especialmente pausa, cambio de intervalo,
 reinicio y notificaciones bloqueadas. No añadas nuevas funciones.
 ```
@@ -570,7 +572,7 @@ git diff
 
 ```text
 $speckit-constitution
-Establece la constitución de SightPause, una extensión Chromium de descanso
+Establece la constitución de BlinkAndRelax, una extensión Chromium de descanso
 visual. Principios: interfaz mínima y accesible; funcionamiento local;
 permisos justificados; dependencias mínimas; temporización resistente al cierre
 del popup y a la suspensión del worker; requisitos y decisiones alineados con
@@ -582,7 +584,7 @@ No implementes todavía la extensión.
 
 **Resultado esperado:** `.specify/memory/constitution.md` con principios, gobierno y versión, sin marcadores como `[PROJECT_NAME]`. El hook Git de inicialización puede intervenir; debe reconocer el repositorio existente.
 
-**Revisa:** que puedas explicar cada principio y comprobarlo. Un ejemplo de plantilla que habla de microservicios no es una obligación de SightPause. Una constitución que impone herramientas innecesarias debe corregirse antes de continuar.
+**Revisa:** que puedas explicar cada principio y comprobarlo. Un ejemplo de plantilla que habla de microservicios no es una obligación de BlinkAndRelax. Una constitución que impone herramientas innecesarias debe corregirse antes de continuar.
 
 **Antes del commit:** la skill añade al principio de la constitución un comentario HTML llamado **Sync Impact Report**, con el cambio de versión, los principios afectados y los posibles pendientes. Ese informe es material temporal para revisar la modificación. Léelo, resuelve o registra los pendientes y elimina ese comentario antes de hacer commit de la constitución. Conserva los principios, la versión y las fechas del documento.
 
@@ -594,7 +596,7 @@ No implementes todavía la extensión.
 
 ```text
 $speckit-specify
-Crear el primer recordatorio de SightPause para personas que trabajan con
+Crear el primer recordatorio de BlinkAndRelax para personas que trabajan con
 un navegador Chromium. Debe avisar periódicamente de que hagan una pausa visual
 sin tener que mantener abierto su panel. El popup muestra estado, tiempo hasta
 el próximo aviso, intervalo y controles para iniciar, pausar y reanudar.
@@ -626,7 +628,7 @@ Get-Content .specify/feature.json
 
 ```text
 $speckit-clarify
-Revisa la spec activa de SightPause. Ayúdame a confirmar el intervalo y sus
+Revisa la spec activa de BlinkAndRelax. Ayúdame a confirmar el intervalo y sus
 límites, inicio manual, pausa y reanudación, cambio de intervalo, tratamiento
 de vencimientos tras reinicio o suspensión y aviso cuando las notificaciones
 no están disponibles. Explica las opciones sin jerga. Guarda las decisiones
@@ -645,7 +647,7 @@ en la spec y corrige los criterios afectados. No introduzcas otra funcionalidad.
 
 ```text
 $speckit-plan
-Diseña la funcionalidad activa de SightPause con Manifest V3, HTML, CSS y
+Diseña la funcionalidad activa de BlinkAndRelax con Manifest V3, HTML, CSS y
 JavaScript modular, sin framework ni compilación. Propón extension/ como
 carpeta cargable y tests/ para pruebas. Usa un service worker como responsable
 del estado, chrome.alarms para vencimientos y chrome.storage.local para
@@ -683,7 +685,7 @@ Si aparece una arquitectura con servidor, autenticación o varias bibliotecas de
 
 ```text
 $speckit-checklist
-Crea una checklist breve para revisar si los requisitos de SightPause definen
+Crea una checklist breve para revisar si los requisitos de BlinkAndRelax definen
 sin ambigüedad la temporización, pausa, recuperación, notificaciones,
 privacidad y accesibilidad. Revisa calidad y cobertura de requisitos;
 no la presentes como evidencia de que el código ya funciona.
@@ -771,7 +773,7 @@ cargar la extensión para revisar su funcionamiento y aspecto.
 
 ```text
 $speckit-converge
-Compara el código actual de SightPause con la spec, el plan, la constitución
+Compara el código actual de BlinkAndRelax con la spec, el plan, la constitución
 y todas las tareas de la funcionalidad activa, incluidas las marcadas [x]
 y las de ciclos anteriores de convergencia. Comprueba el comportamiento
 resultante de las correcciones. Identifica requisitos o escenarios aún
@@ -798,7 +800,7 @@ node --version
 node --test
 ```
 
-No ejecutes este bloque como validación del producto antes de que existan las pruebas. Revisa cuántas se descubrieron y qué escenarios cubren: una ejecución con cero pruebas no verifica SightPause. Si el plan revisado eligió otro comando, `quickstart.md` debe indicar el comando real y por qué cambió.
+No ejecutes este bloque como validación del producto antes de que existan las pruebas. Revisa cuántas se descubrieron y qué escenarios cubren: una ejecución con cero pruebas no verifica BlinkAndRelax. Si el plan revisado eligió otro comando, `quickstart.md` debe indicar el comando real y por qué cambió.
 
 El reloj controlable permite probar «han pasado 20 minutos» sin esperar 20 minutos reales. Comprueba cálculos y transiciones en funciones separadas de las APIs del navegador. Las simulaciones de `chrome.*` ayudan a probar integración lógica, pero no demuestran que Windows presente una notificación.
 
@@ -809,7 +811,7 @@ La carpeta `extension/` es la propuesta de esta guía. Si el plan final utiliza 
 1. Abre Chrome y escribe `chrome://extensions` en la barra de direcciones.
 2. Activa **Modo de desarrollador**.
 3. Pulsa **Cargar descomprimida / Load unpacked** y selecciona `C:\dev\sightpause\extension`.
-4. Revisa si la tarjeta muestra errores. Fija el icono de SightPause en la barra y abre su popup.
+4. Revisa si la tarjeta muestra errores. Fija el icono de BlinkAndRelax en la barra y abre su popup.
 5. Después de cambiar el código, recarga la extensión desde su tarjeta y vuelve a abrir el popup.
 
 La [guía de Chrome para una primera extensión](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world) explica este procedimiento. Para la comprobación secundaria en Edge, utiliza `edge://extensions` y sus controles equivalentes; registra la versión y cualquier diferencia. Una comprobación en Chrome no acredita por sí sola todos los navegadores Chromium.
@@ -873,7 +875,7 @@ La política de este tutorial es conservar los documentos de una funcionalidad m
 **Antes:** la spec dice que debe conservarse el vencimiento. **Acción — Codex, ejecución:**
 
 ```text
-Hay un error en SightPause: al cerrar y reabrir el popup, el contador vuelve
+Hay un error en BlinkAndRelax: al cerrar y reabrir el popup, el contador vuelve
 al intervalo completo. Localiza la funcionalidad de recordatorios y lee su spec,
 plan y tareas. Reproduce el problema y comprueba el requisito de persistencia.
 Si el comportamiento esperado está claro, añade una tarea de corrección con
@@ -889,7 +891,7 @@ la comprobación de cerrar/reabrir, diferenciando pruebas manuales pendientes.
 **Antes:** la spec inicial conserva el tiempo restante al reanudar. Ahora decides cambiarlo. **Acción — Codex, primero propuesta:**
 
 ```text
-Quiero cambiar SightPause: al reanudar una pausa debe empezar un intervalo
+Quiero cambiar BlinkAndRelax: al reanudar una pausa debe empezar un intervalo
 completo, en vez de conservar el tiempo restante. Lee los artefactos de la
 funcionalidad de recordatorios. Propón el cambio de requisitos y criterios,
 su impacto en estado guardado, interfaz y pruebas. No implementes aún.
@@ -912,7 +914,7 @@ el código hasta comprobar la consistencia de los documentos.
 **Antes:** comportamiento correcto y un problema visual concreto. **Acción — Codex, ejecución:**
 
 ```text
-Mejora la presentación del popup de SightPause: da más separación entre el
+Mejora la presentación del popup de BlinkAndRelax: da más separación entre el
 contador y los controles, unifica la altura de botones y haz visible el foco
 del teclado. Lee primero el contrato visual y los requisitos de accesibilidad.
 Conserva textos, controles, temporización y permisos. Usa el CSS existente.
@@ -929,7 +931,7 @@ inicial, activo, pausado y error, y explica cómo comprobaste el resultado.
 
 ```text
 $speckit-specify
-Añadir a SightPause una preferencia de apariencia con opciones Sistema,
+Añadir a BlinkAndRelax una preferencia de apariencia con opciones Sistema,
 Claro y Oscuro. Debe conservarse entre sesiones, respetar la elección del
 usuario y mantener legibles todos los estados del popup. No debe modificar
 temporización, controles ni permisos de los recordatorios. Reutiliza la base
@@ -1013,7 +1015,7 @@ Antes de la primera spec es normal que las rutas no existan. Después, una varia
 Para cambiar de funcionalidad de manera explícita, pide al agente:
 
 ```text
-Quiero retomar la funcionalidad de recordatorios de SightPause. Examina las
+Quiero retomar la funcionalidad de recordatorios de BlinkAndRelax. Examina las
 ramas y specs existentes y mi estado de Git. Identifica el directorio correcto
 y comprueba .specify/feature.json y SPECIFY_FEATURE_DIRECTORY. Si la elección
 es inequívoca, selecciona la rama apropiada sin perder cambios pendientes y
@@ -1024,7 +1026,7 @@ muéstramelas antes de elegir. No crees una nueva spec ni implementes nada aún.
 ### Prompt completo para retomar otra sesión o modelo
 
 ```text
-Estoy retomando SightPause. Lee docs/guia-sdd.md como guía y consulta la
+Estoy retomando BlinkAndRelax. Lee docs/guia-sdd.md como guía y consulta la
 constitución y los artefactos de la funcionalidad activa como requisitos reales.
 Comprueba rama, cambios pendientes y puntero de funcionalidad antes de actuar.
 Resume: alcance aprobado, tareas completadas, pendientes y pruebas ejecutadas
@@ -1044,7 +1046,7 @@ Si necesitas un resumen al terminar una sesión, pide guardarlo dentro del direc
 
 Las siguientes personas describen su propio uso. Son testimonios, no un estudio comparativo de productividad. Todos los enlaces se consultaron el **07/09/2026**. Para Reddit, la página mostraba antigüedades relativas; no se ha verificado una fecha exacta de publicación.
 
-| Fuente y fecha visible | Experiencia que relata | Aplicación propuesta en SightPause |
+| Fuente y fecha visible | Experiencia que relata | Aplicación propuesta en BlinkAndRelax |
 |---|---|---|
 | **Organic_Ad1162**, publicación con «4mo ago», [conversación sobre Spec Kit](https://www.reddit.com/r/vibecoding/comments/1sykoln/i_cannot_say_enough_good_things_about_githubs/) | Recomienda preparar la idea, ejecutar aclaraciones, analizar después de las tareas y guardar avances pequeños. | Conversar sobre pausa y reinicio antes del plan; comprobar cobertura antes del código; revisar commits por avance. |
 | **jokiruiz**, comentario con «3mo ago», [misma conversación](https://www.reddit.com/r/vibecoding/comments/1sykoln/i_cannot_say_enough_good_things_about_githubs/) | Destaca leer la arquitectura propuesta y relata desajustes al cambiar código sin actualizar la spec. | Rechazar un backend innecesario en `plan`; registrar el cambio de política de pausa antes de implementarlo. |
@@ -1057,7 +1059,7 @@ Las siguientes personas describen su propio uso. Son testimonios, no un estudio 
 
 ```text
 Usa la sección de experiencias de docs/guia-sdd.md para revisar nuestro flujo.
-Señala una práctica que nos ayude y una que sería excesiva para SightPause.
+Señala una práctica que nos ayude y una que sería excesiva para BlinkAndRelax.
 Distingue testimonio, documentación oficial y recomendación tuya. No cambies
 el proyecto ni instales herramientas a partir de un comentario de comunidad.
 ```
@@ -1142,6 +1144,6 @@ Marca estos puntos cuando puedas demostrarlos. Esta es una lista del tutorial, n
 
 **Evidencia local:** metadatos de `.specify/`, configuración de la extensión Git, ayuda de Specify y skills enlazadas en cada fase. Estos archivos explican el comportamiento de la instalación auditada; pueden diferir de documentación más reciente.
 
-**Experiencias:** los autores y enlaces de la sección 11 son observaciones personales con aplicación propuesta al tutorial. Los prompts de SightPause, la política de iteración y las decisiones iniciales de producto son ejemplos propios de esta guía. Los requisitos definitivos se guardarán en la constitución y los artefactos de cada funcionalidad cuando recorras el proceso.
+**Experiencias:** los autores y enlaces de la sección 11 son observaciones personales con aplicación propuesta al tutorial. Los prompts de BlinkAndRelax, la política de iteración y las decisiones iniciales de producto son ejemplos propios de esta guía. Los requisitos definitivos se guardarán en la constitución y los artefactos de cada funcionalidad cuando recorras el proceso.
 
-Esta guía describe la configuración actual de SightPause con Spec Kit 1.2.1 y las extensiones Git y GitHub instaladas. Se conserva la fecha de consulta de las fuentes externas del tutorial. Las versiones y herramientas verificadas figuran en la sección 3 y el mantenimiento de la instalación en la sección 4. Los bloques y ejercicios de desarrollo son instrucciones para el lector; su presencia aquí no acredita que se hayan ejecutado ni que SightPause esté construido.
+Esta guía describe la configuración actual de BlinkAndRelax con Spec Kit 1.2.1 y las extensiones Git y GitHub instaladas. Se conserva la fecha de consulta de las fuentes externas del tutorial. Las versiones y herramientas verificadas figuran en la sección 3 y el mantenimiento de la instalación en la sección 4. Los bloques y ejercicios de desarrollo son instrucciones para el lector; su presencia aquí no acredita que se hayan ejecutado ni que BlinkAndRelax esté construido.
