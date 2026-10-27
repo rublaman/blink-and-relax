@@ -10,7 +10,7 @@ El ejemplo es **BlinkAndRelax**, una extensión Chromium que recuerda hacer desc
 
 **Punto de partida:** todavía no hay una extensión implementada ni una especificación de funcionalidad; la constitución está pendiente de completar. Los prompts, requisitos y árboles futuros de este documento son ejemplos para construir BlinkAndRelax. Los comandos de las fases se apoyan en las skills instaladas y sus indicaciones actuales, incluidos el informe temporal de constitución y la comprobación de todas las tareas durante la convergencia.
 
-**Nombre actualizado el 18 de octubre de 2026:** BlinkAndRelax sustituye a SightPause. El repositorio de GitHub se llama `blinkandrelax`; la carpeta local conserva `C:\dev\sightpause`, por lo que las rutas de esta guía siguen usando ese directorio.
+**Nombre del repositorio actualizado el 27 de octubre de 2026:** el repositorio de GitHub se llama `blink-and-relax` y la carpeta local es `C:\dev\blink-and-relax`. BlinkAndRelax se mantiene como nombre provisional de la extensión; su presentación definitiva está pendiente.
 
 ## Índice
 
@@ -33,7 +33,7 @@ El ejemplo es **BlinkAndRelax**, una extensión Chromium que recuerda hacer desc
 
 **Aprenderás:** a distinguir una explicación de una acción que modifica el proyecto.
 
-**Antes de empezar:** abre `C:\dev\sightpause` como proyecto en Codex. Necesitas poder abrir una terminal PowerShell, leer un Markdown y cargar una extensión local en un navegador. No necesitas conocer SDD. Si un término de programación te resulta desconocido, usa el glosario y pide una explicación antes de aceptar una decisión técnica.
+**Antes de empezar:** abre `C:\dev\blink-and-relax` como proyecto en Codex. Necesitas poder abrir una terminal PowerShell, leer un Markdown y cargar una extensión local en un navegador. No necesitas conocer SDD. Si un término de programación te resulta desconocido, usa el glosario y pide una explicación antes de aceptar una decisión técnica.
 
 **Dónde actuar:** cada bloque indica su destino:
 
@@ -138,7 +138,7 @@ No generes todavía archivos.
 **Antes:** proyecto abierto y terminal en PowerShell. **Dónde:** terminal y editor. Estos comandos son de consulta:
 
 ```powershell
-Set-Location C:\dev\sightpause
+Set-Location C:\dev\blink-and-relax
 git status --short --branch
 git log -3 --oneline
 git remote -v
@@ -152,12 +152,12 @@ Get-Content .specify/integration.json
 
 ### Estado verificado del proyecto
 
-Esta tabla refleja la comprobación del 17/10/2026, con la URL del repositorio actualizada tras el cambio de nombre del 18/10/2026. Si ejecutas el tutorial después de cambiar el proyecto, tu salida puede ser distinta.
+Esta tabla refleja la comprobación del 17/10/2026, con la URL del repositorio actualizada tras el cambio de nombre del 27/10/2026. Si ejecutas el tutorial después de cambiar el proyecto, tu salida puede ser distinta.
 
 | Elemento | Estado observado |
 |---|---|
 | Rama y estado Git | `main`; consulta `git status --short --branch` para ver cambios pendientes y commits por sincronizar |
-| Remoto | `https://github.com/rublaman/blinkandrelax.git` |
+| Remoto | `https://github.com/rublaman/blink-and-relax.git` |
 | CLI | Specify 1.2.1, instalada mediante uv |
 | Integración e infraestructura | Codex y archivos compartidos en 1.2.1; skills habilitadas |
 | Extensión Git | Git Branching Workflow 1.0.1, habilitada, 5 comandos y 18 hooks |
@@ -175,10 +175,10 @@ No hace falta que `specify check` encuentre todos los agentes que enumera. En es
 
 ### Qué carpetas son infraestructura y cuáles contendrán tu trabajo
 
-**Estructura actual comprobada en `C:\dev\sightpause`:** el árbol siguiente muestra carpetas y archivos que ya existen. Se omite el contenido de las carpetas marcadas con `…`. No es la estructura final de la extensión.
+**Estructura actual comprobada en `C:\dev\blink-and-relax`:** el árbol siguiente muestra carpetas y archivos que ya existen. Se omite el contenido de las carpetas marcadas con `…`. No es la estructura final de la extensión.
 
 ```text
-sightpause/
+blink-and-relax/
 ├── .agents/
 │   └── skills/                  Skills de las fases y comandos Git
 │       └── …
@@ -235,7 +235,7 @@ En un árbol abreviado, `.agents/skills/` significa una carpeta `skills` dentro 
 **Lo que se creará después:** actualmente no existen `specs/` ni `.specify/feature.json`. Al ejecutar `$speckit-specify` para la primera funcionalidad, se creará una estructura como esta; `001-nombre-funcionalidad` es un nombre ilustrativo:
 
 ```text
-sightpause/
+blink-and-relax/
 ├── .specify/
 │   └── feature.json              Puntero a la funcionalidad activa
 └── specs/
@@ -263,7 +263,7 @@ Para orientar al agente, copia en Codex:
 ```text
 Este proyecto usa scripts sh en Windows. Para los scripts Bash de Spec Kit
 utiliza C:/Program Files/Git/bin/bash.exe explícitamente. Trabaja desde
-C:/dev/sightpause y comprueba el directorio de funcionalidad activa antes
+C:/dev/blink-and-relax y comprueba el directorio de funcionalidad activa antes
 de generar documentos. No cambies el tipo de scripts durante este tutorial.
 ```
 
@@ -297,7 +297,7 @@ La instalación aislada mediante `uv tool install` deja `specify.exe` en `C:\Use
 La [guía oficial de actualización](https://github.github.com/spec-kit/upgrade.html) distingue la CLI de los archivos del proyecto. Consulta el estado antes de decidir si necesitas actualizar:
 
 ```powershell
-Set-Location C:\dev\sightpause
+Set-Location C:\dev\blink-and-relax
 specify --version
 specify self check
 specify integration status
@@ -559,7 +559,7 @@ Los comandos y sus efectos se basan en las [skills instaladas](../.agents/skills
 **Aprenderás:** a saber qué trabajo pertenece al ciclo. **Antes:** decisiones iniciales y entorno disponible. **Dónde:** PowerShell.
 
 ```powershell
-Set-Location C:\dev\sightpause
+Set-Location C:\dev\blink-and-relax
 git status --short --branch
 git diff
 ```
@@ -810,7 +810,7 @@ La carpeta `extension/` es la propuesta de esta guía. Si el plan final utiliza 
 
 1. Abre Chrome y escribe `chrome://extensions` en la barra de direcciones.
 2. Activa **Modo de desarrollador**.
-3. Pulsa **Cargar descomprimida / Load unpacked** y selecciona `C:\dev\sightpause\extension`.
+3. Pulsa **Cargar descomprimida / Load unpacked** y selecciona `C:\dev\blink-and-relax\extension`.
 4. Revisa si la tarjeta muestra errores. Fija el icono de BlinkAndRelax en la barra y abre su popup.
 5. Después de cambiar el código, recarga la extensión desde su tarjeta y vuelve a abrir el popup.
 
